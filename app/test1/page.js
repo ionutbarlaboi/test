@@ -1,28 +1,14 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import questions from "../../public/testul1.json";
 
-export default function TestPage() {
-  const [questions, setQuestions] = useState([]);
+export default function Test1Page() {
   const [current, setCurrent] = useState(0);
-  const [selected, setSelected] = useState(null);
   const [answered, setAnswered] = useState({});
+  const [selected, setSelected] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [finished, setFinished] = useState(false);
-
-  useEffect(() => {
-    const loadTest = async () => {
-      const res = await fetch("/testul1.json");
-      const data = await res.json();
-      setQuestions(data);
-    };
-    loadTest();
-  }, []);
-
-  if (!questions.length) {
-    return <p style={{ textAlign: "center", marginTop: "2rem" }}>Se încarcă testul...</p>;
-  }
 
   const currentQuestion = questions[current];
   const isAnswered = answered[current] !== undefined;
@@ -30,12 +16,10 @@ export default function TestPage() {
 
   const handleAnswer = (index) => {
     if (isAnswered) return;
-    const isCorrect = index === currentQuestion.correct;
     setAnswered({ ...answered, [current]: index });
     setSelected(index);
     setShowExplanation(true);
   };
-
   const handleRevin = () => {
     let next = current + 1;
     while (next < questions.length && answered[next] !== undefined) {
@@ -48,9 +32,9 @@ export default function TestPage() {
     }
   };
 
-
-  const scorCorect = Object.entries(answered).filter(([idx, val]) =>
-    questions[parseInt(idx)].correct === val).length;
+  const scorCorect = Object.entries(answered).filter(
+    ([idx, val]) => questions[parseInt(idx)].correct === val
+  ).length;
 
   if (finished) {
     return (
@@ -60,11 +44,11 @@ export default function TestPage() {
         </h2>
 
         <div style={{ marginTop: "2rem" }}>
-          <button onClick={() => location.reload()} style={{ marginRight: "1rem", textDecoration: "underline" }}>
+          <button onClick={() => location.reload()} style={{ marginRight: "1rem", textDecoration: "underline", color: "#0070f3" }}>
             Reia testul
           </button>
           <Link href="/alege-test">
-            <button style={{ textDecoration: "underline" }}>Alege un alt test</button>
+            <button style={{ textDecoration: "underline", color: "#0070f3" }}>Alege un alt test</button>
           </Link>
         </div>
 
@@ -74,8 +58,8 @@ export default function TestPage() {
           </Link>
         </div>
 
-        <p style={{ fontWeight: "bold", marginTop: "3rem" }}>Iată cum ai răspuns:</p>
-        <div style={{ textAlign: "left", margin: "auto", maxWidth: "600px" }}>
+        <p style={{ fontWeight: "bold", fontSize: "18px", marginTop: "2rem" }}>Iată cum ai răspuns:</p>
+        <div style={{ textAlign: "left", margin: "auto", maxWidth: "700px" }}>
           {questions.map((q, i) => {
             const userAnswer = answered[i];
             return (
@@ -103,13 +87,10 @@ export default function TestPage() {
       <h2 style={{ textAlign: "center", fontSize: "28px", fontWeight: "bold", marginBottom: "1rem" }}>
         Testul 1
       </h2>
-      <p style={{ fontWeight: "bold" }}>
+
+      <p style={{ textAlign: "center", fontWeight: "bold" }}>
         {current + 1}. {currentQuestion.text}
       </p>
-
-      {currentQuestion.image && (
-        <img src={currentQuestion.image} alt="Întrebare" style={{ maxWidth: "100%", margin: "1rem 0" }} />
-      )}
 
       {currentQuestion.options.map((opt, i) => (
         <button
@@ -118,9 +99,8 @@ export default function TestPage() {
           style={{
             display: "block",
             width: "100%",
-            textAlign: "left",
-            padding: "10px",
             margin: "10px 0",
+            padding: "10px",
             borderRadius: "8px",
             border: "1px solid #ccc",
             backgroundColor:
@@ -130,7 +110,8 @@ export default function TestPage() {
                 ? "#d1e7dd"
                 : selected === i
                 ? "#f8d7da"
-                : "#fff"
+                : "#fff",
+            textAlign: "center",
           }}
         >
           {opt}
@@ -143,33 +124,32 @@ export default function TestPage() {
             {selected === currentQuestion.correct ? "Răspuns corect" : "Răspuns greșit"}
           </p>
           <p style={{ color: "#000" }}>{currentQuestion.explanation}</p>
-          {currentQuestion.explanationImage && (
-            <img src={currentQuestion.explanationImage} alt="Explicație" style={{ maxWidth: "100%", marginTop: "1rem" }} />
-          )}
         </div>
       )}
-
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2rem" }}>
+      <div style={{ marginTop: "2rem", textAlign: "right" }}>
         {!isAnswered && (
           <button
             onClick={handleRevin}
             style={{
-              color: "#0070f3",
-              textDecoration: "underline",
               background: "none",
               border: "none",
-              cursor: "pointer"
+              color: "#0070f3",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontWeight: "bold"
             }}
           >
             Revin mai târziu →
           </button>
         )}
 
-        {isAnswered && (
+        {isAnswered && !allAnswered && (
           <button
-            onClick={allAnswered ? () => setFinished(true) : () => {
+            onClick={() => {
               let next = current + 1;
-              while (next < questions.length && answered[next] !== undefined) next++;
+              while (next < questions.length && answered[next] !== undefined) {
+                next++;
+              }
               if (next < questions.length) {
                 setCurrent(next);
                 setSelected(null);
@@ -179,24 +159,36 @@ export default function TestPage() {
               }
             }}
             style={{
-              color: "#0070f3",
-              textDecoration: "underline",
               background: "none",
               border: "none",
+              color: "#0070f3",
               cursor: "pointer",
-              marginLeft: "auto"
+              textDecoration: "underline",
+              fontWeight: "bold"
             }}
           >
-            {allAnswered ? "Vezi rezultatul" : "Întrebarea următoare →"}
+            Întrebarea următoare →
+          </button>
+        )}
+
+        {isAnswered && allAnswered && current === questions.length - 1 && (
+          <button
+            onClick={() => setFinished(true)}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#0070f3",
+              cursor: "pointer",
+              textDecoration: "underline",
+              fontWeight: "bold"
+            }}
+          >
+            Vezi rezultatul →
           </button>
         )}
       </div>
 
-      <p style={{ textAlign: "center", marginTop: "2rem", color: "green", fontWeight: "bold" }}>
-        Corecte: {scorCorect}/{questions.length}
-      </p>
-
-      <div style={{ textAlign: "center", marginTop: "1rem" }}>
+      <div style={{ marginTop: "2rem", textAlign: "center" }}>
         <Link href="/">
           <button style={{ fontSize: "14px" }}>Înapoi la pagina principală</button>
         </Link>
