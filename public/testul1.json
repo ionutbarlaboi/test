@@ -1,0 +1,54 @@
+[
+  {
+    "text": "cat fac 1+1",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "correct": 1,
+    "explanation": "adunare",
+    "image": null,
+    "explanationImage": null
+  },
+  {
+    "text": "ce zi e azi?",
+    "options": [
+      "luni ",
+      "marti",
+      "miercuri",
+      "joi"
+    ],
+    "correct": 0,
+    "explanation": "asa e azi",
+    "image": null,
+    "explanationImage": null
+  },
+  {
+    "text": "fac un test",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "correct": 0,
+    "explanation": "asa vreau eu",
+    "image": null,
+    "explanationImage": null
+  },
+  {
+    "text": "hai sa vedem faca poze",
+    "options": [
+      "22",
+      "33",
+      "44",
+      "55"
+    ],
+    "correct": 3,
+    "explanation": "xyz",
+    "image": null,
+    "explanationImage": null
+  }
+]
