@@ -1,0 +1,98 @@
+"use client";
+import { useState } from "react";
+
+export default function UploadTestPage() {
+  const [testName, setTestName] = useState("test1");
+  const [fileName, setFileName] = useState("");
+  const [status, setStatus] = useState("");
+  const [content, setContent] = useState(null);
+
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target.result);
+        if (!Array.isArray(json)) {
+          setStatus("Fișier invalid: nu este un array de întrebări.");
+        } else {
+          setContent(json);
+          const numar = testName.replace(/[^\d]/g, "") || "X";
+          setStatus(`Fișier valid! Salvează-l ca: public/testul${numar}.json`);
+        }
+      } catch (err) {
+        setStatus("Eroare la citirea fișierului: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto", textAlign: "center" }}>
+      <h2 style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "1rem" }}>
+        Încărcare test JSON
+      </h2>
+
+      <label style={{ fontWeight: "bold" }}>Scrie numele testului (ex: test3):</label>
+      <input
+        type="text"
+        value={testName}
+        onChange={(e) => setTestName(e.target.value)}
+        style={{
+          margin: "1rem auto",
+          padding: "8px",
+          fontSize: "16px",
+          width: "60%",
+          display: "block",
+          border: "2px solid black",
+          borderRadius: "5px",
+        }}
+        placeholder="test3"
+      />
+
+      <div style={{ marginTop: "1rem" }}>
+        <label
+          htmlFor="fileInput"
+          style={{
+            padding: "8px 16px",
+            backgroundColor: "#0070f3",
+            color: "white",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontWeight: "bold"
+          }}
+        >
+          Selectează fișier JSON
+        </label>
+        <input
+          id="fileInput"
+          type="file"
+          accept=".json"
+          onChange={handleFile}
+          style={{ display: "none" }}
+        />
+        {fileName && <p style={{ marginTop: "0.5rem" }}>Fișier selectat: <strong>{fileName}</strong></p>}
+      </div>
+
+      {status && (
+        <p style={{ marginTop: "1rem", fontWeight: "bold", color: status.includes("valid") ? "green" : "red" }}>
+          {status}
+        </p>
+      )}
+
+      {content && (
+        <div style={{ marginTop: "2rem", fontSize: "14px", textAlign: "left" }}>
+          <p style={{ fontWeight: "bold" }}>Previzualizare întrebări ({content.length}):</p>
+          <ul>
+            {content.slice(0, 5).map((q, i) => (
+              <li key={i}>{i + 1}. {q.text?.slice(0, 100)}</li>
+            ))}
+          </ul>
+          {content.length > 5 && <p>... și altele</p>}
+        </div>
+      )}
+    </div>
+  );
+}

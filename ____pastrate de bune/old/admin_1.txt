@@ -1,0 +1,211 @@
+"use client";
+
+import { useState } from "react";
+
+export default function AdminPage() {
+  const [testName, setTestName] = useState("");
+  const [questions, setQuestions] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [current, setCurrent] = useState({
+    text: "",
+    options: ["", "", "", ""],
+    correct: 0,
+    explanation: "",
+    image: null,
+    explanationImage: null,
+  });
+
+  const handleOptionChange = (index, value) => {
+    const newOptions = [...current.options];
+    newOptions[index] = value;
+    setCurrent({ ...current, options: newOptions });
+  };
+
+  const handleImageUpload = (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (type === "question") {
+        setCurrent({ ...current, image: reader.result });
+      } else {
+        setCurrent({ ...current, explanationImage: reader.result });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const addOrUpdateQuestion = () => {
+    if (!testName.trim()) return alert("Introduceți un nume pentru test.");
+    if (!current.text.trim()) return alert("Enunțul nu poate fi gol.");
+    if (current.options.some((opt) => !opt.trim())) return alert("Toate variantele trebuie completate.");
+
+    if (editingIndex !== null) {
+      const updated = [...questions];
+      updated[editingIndex] = { ...current };
+      setQuestions(updated);
+      setEditingIndex(null);
+    } else {
+      const updated = [...questions, { ...current }];
+      setQuestions(updated);
+    }
+
+    setCurrent({
+      text: "",
+      options: ["", "", "", ""],
+      correct: 0,
+      explanation: "",
+      image: null,
+      explanationImage: null,
+    });
+  };
+
+  const deleteQuestion = (index) => {
+    const updated = [...questions];
+    updated.splice(index, 1);
+    setQuestions(updated);
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setCurrent({
+        text: "",
+        options: ["", "", "", ""],
+        correct: 0,
+        explanation: "",
+        image: null,
+        explanationImage: null,
+      });
+    }
+  };
+
+  const editQuestion = (index) => {
+    const q = questions[index];
+    setCurrent({ ...q });
+    setEditingIndex(index);
+  };
+
+  const exportTest = () => {
+    if (!testName.trim()) return alert("Introduceți un nume pentru test.");
+    const data = questions.map((q) => ({
+      text: q.text,
+      options: q.options,
+      correct: q.correct,
+      explanation: q.explanation,
+      image: q.image,
+      explanationImage: q.explanationImage,
+    }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${testName.replace(/\\s+/g, "-").toLowerCase()}.json`;
+    a.click();
+  };
+
+  const importTest = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        setQuestions(data);
+        alert("Test importat cu succes.");
+      } catch (err) {
+        alert("Fișier invalid.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: "800px", margin: "auto" }}>
+      <h2 style={{ fontSize: "24px", fontWeight: "bold" }}>Modul Admin – Creare și Editare Test</h2>
+
+      <div style={{
+        border: "2px solid #0070f3",
+        borderRadius: "10px",
+        padding: "1rem",
+        backgroundColor: "#f5faff",
+        marginTop: "1rem"
+      }}>
+        <label>Nume test:</label>
+        <input
+          type="text"
+          value={testName}
+          onChange={(e) => setTestName(e.target.value)}
+          placeholder="Ex: Testul 1"
+          style={{ width: "100%", marginBottom: "1rem" }}
+        />
+
+        <label>Enunț:</label>
+        <textarea
+          value={current.text}
+          onChange={(e) => setCurrent({ ...current, text: e.target.value })}
+          rows={3}
+          style={{ width: "100%", marginBottom: "1rem" }}
+        />
+
+        <label>Imagine întrebare (opțional):</label>
+        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, "question")} />
+
+        <h4 style={{ marginTop: "1rem" }}>Variante de răspuns:</h4>
+        {current.options.map((opt, i) => (
+          <div key={i} style={{ marginBottom: "0.5rem" }}>
+            <input
+              type="radio"
+              checked={current.correct === i}
+              onChange={() => setCurrent({ ...current, correct: i })}
+              style={{ marginRight: "0.5rem" }}
+            />
+            <input
+              type="text"
+              value={opt}
+              onChange={(e) => handleOptionChange(i, e.target.value)}
+              placeholder={`Varianta ${i + 1}`}
+              style={{ width: "80%" }}
+            />
+          </div>
+        ))}
+
+        <label>Explicație:</label>
+        <textarea
+          value={current.explanation}
+          onChange={(e) => setCurrent({ ...current, explanation: e.target.value })}
+          rows={3}
+          style={{ width: "100%", marginBottom: "1rem" }}
+        />
+
+        <label>Imagine explicație (opțional):</label>
+        <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, "explanation")} />
+
+        <div style={{ marginTop: "1rem" }}>
+          <button onClick={addOrUpdateQuestion}>
+            {editingIndex !== null ? "Actualizează întrebarea" : "Adaugă întrebare"}
+          </button>
+        </div>
+      </div>
+
+      <hr style={{ margin: "2rem 0" }} />
+
+      <h3>Întrebări salvate ({questions.length}):</h3>
+      <ul>
+        {questions.map((q, i) => (
+          <li key={i} style={{ marginBottom: "1rem" }}>
+            <strong>{i + 1}. {q.text}</strong>
+            <button onClick={() => editQuestion(i)} style={{ marginLeft: "1rem", color: "green" }}>
+              Editează
+            </button>
+            <button onClick={() => deleteQuestion(i)} style={{ marginLeft: "0.5rem", color: "red" }}>
+              Șterge
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <div style={{ marginTop: "2rem" }}>
+        <button onClick={exportTest} style={{ marginRight: "1rem" }}>Exportă testul</button>
+        <input type="file" accept="application/json" onChange={importTest} />
+      </div>
+    </div>
+  );
+}

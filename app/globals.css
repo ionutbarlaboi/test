@@ -1,0 +1,48 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+/* Elimină marginile implicite și scroll-ul */
+html, body {
+  height: 100%;
+  overflow-y: auto; /* sau scroll */
+}
+.latex-inline-wrapper {
+  display: inline-block;
+  white-space: nowrap;          /* Nu sparge formula pe mai multe linii */
+  user-select: text;
+  outline: none !important;    /* Fără contur la focus */
+  caret-color: transparent;    /* Ascunde cursorul de inserție */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* Dacă apare vreo săgeată de tip spin-button (rare, dar poate în unele browsere) */
+.latex-inline-wrapper::-webkit-inner-spin-button,
+.latex-inline-wrapper::-webkit-outer-spin-button {
+  display: none;
+}
+
+/* Dacă mai apar alte săgeți sau elemente de tip cursor mutabil */
+.latex-inline-wrapper::-moz-focus-inner {
+  border: 0;
+}
+
+
+.button-link {
+  display: inline-block;
+  background-color: #0070f3;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.button-link:hover {
+  background-color: #0059c1;
+}
+

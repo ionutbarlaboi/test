@@ -1,0 +1,60 @@
+"use client";
+
+import Image from "next/image";
+
+export default function HomePage() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh", // Centrare completă
+        gap: "2rem", // Spațiu între elemente
+        textAlign: "center", // Aliniază textul în centru
+        padding: "2rem", // Un pic de padding pentru margini
+        backgroundColor: "#fff",
+      }}
+    >
+      {/* Butoane sus */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "4rem",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <button style={{ fontWeight: "bold" }}>Despre</button>
+        <button style={{ fontWeight: "bold" }}>English</button>
+      </div>
+
+      {/* Imagine */}
+      <Image
+        src="/math-cartoon.jpg"
+        alt="Caricatură matematică"
+        width={400}
+        height={300}
+        style={{ margin: "0 auto" }} // Asigură centrare
+      />
+
+      {/* Buton Hai să începem */}
+      <button
+        onClick={() => window.location.href = "/alege-un-test"}
+        style={{
+          marginTop: "2rem",
+          padding: "12px 28px",
+          fontSize: "18px",
+          border: "2px solid #0070f3",
+          borderRadius: "8px",
+          backgroundColor: "white",
+          color: "#0070f3",
+          cursor: "pointer",
+        }}
+      >
+        Hai să începem
+      </button>
+    </div>
+  );
+}

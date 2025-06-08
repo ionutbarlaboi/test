@@ -1,0 +1,249 @@
+"use client";
+
+import Image from "next/image";
+import { useState } from "react";
+
+export default function HomePage() {
+  const [showAbout, setShowAbout] = useState(false);
+  const [showLangSelector, setShowLangSelector] = useState(false);
+
+  return (
+    <>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100dvh",
+          maxHeight: "100dvh",
+          padding: "0 2rem",
+          boxSizing: "border-box",
+          backgroundColor: "#fff",
+          alignItems: "center",
+          // Nu folosim justifyContent ca să controlăm separat spațiile
+        }}
+      >
+        {/* Spațiu între marginea sus și butoanele de sus */}
+        <div
+          style={{
+            flexGrow: 1,
+            display: "flex",
+            alignItems: "flex-end", // butoanele să fie jos în div
+            width: "100%",
+            maxWidth: "480px",
+          }}
+        >
+          {/* Butoanele de sus */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "3.5rem",
+              width: "100%",
+            }}
+          >
+            <button
+              onClick={() => setShowAbout(true)}
+              style={{
+                fontWeight: "600",
+                fontSize: "0.9rem",
+                padding: "6px 12px",
+                cursor: "pointer",
+                borderRadius: "6px",
+                border: "1.5px solid #0070f3",
+                backgroundColor: "white",
+                color: "#0070f3",
+                userSelect: "none",
+              }}
+              aria-label="Despre"
+            >
+              Despre
+            </button>
+            <button
+              onClick={() => setShowLangSelector(true)}
+              style={{
+                fontWeight: "600",
+                fontSize: "0.9rem",
+                padding: "6px 12px",
+                cursor: "pointer",
+                borderRadius: "6px",
+                border: "1.5px solid #0070f3",
+                backgroundColor: "white",
+                color: "#0070f3",
+                userSelect: "none",
+              }}
+              aria-label="Selectează limba"
+            >
+              Limbi
+            </button>
+          </div>
+        </div>
+
+        {/* Imaginea */}
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "480px",
+            height: "40vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "1rem",
+            marginBottom: "1rem",
+          }}
+        >
+          <Image
+            src="/math-cartoon.jpg"
+            alt="Caricatură matematică"
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
+            width={480}
+            height={500}
+            priority
+          />
+        </div>
+
+        {/* Spațiu între imagine și buton */}
+        <div
+          style={{
+            flexGrow: 1,
+            display: "flex",
+            alignItems: "flex-start", // buton jos în acest div
+            width: "100%",
+            maxWidth: "480px",
+          }}
+        >
+          <button
+            onClick={() => (window.location.href = "/alege-un-test")}
+            style={{
+              padding: "10px 24px",
+              fontSize: "18px",
+              border: "2px solid #0070f3",
+              borderRadius: "8px",
+              backgroundColor: "white",
+              color: "#0070f3",
+              cursor: "pointer",
+              userSelect: "none",
+              maxWidth: "240px",
+              width: "100%",
+              margin: "0 auto",
+              display: "block",
+            }}
+          >
+            Hai să începem
+          </button>
+        </div>
+      </div>
+
+      {/* Modal Despre */}
+      {showAbout && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+            padding: "1rem",
+          }}
+          onClick={() => setShowAbout(false)}
+          aria-modal="true"
+          role="dialog"
+          tabIndex={-1}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "1.5rem",
+              borderRadius: "8px",
+              maxWidth: "400px",
+              width: "100%",
+              position: "relative",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowAbout(false)}
+              style={{
+                position: "absolute",
+                top: "0.5rem",
+                right: "0.5rem",
+                border: "none",
+                background: "none",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                color: "#555",
+              }}
+              aria-label="Închide"
+            >
+              ×
+            </button>
+            <h2>Despre aplicație</h2>
+            <p style={{ marginTop: "1rem", lineHeight: 1.5 }}>
+              Aceasta este o aplicație pentru teste grilă de matematică destinat
+              elevilor de gimnaziu. Permite rezolvarea testelor cu feedback
+              imediat și învățare interactivă.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Modal selector limbi */}
+      {showLangSelector && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+            padding: "1rem",
+          }}
+          onClick={() => setShowLangSelector(false)}
+          aria-modal="true"
+          role="dialog"
+          tabIndex={-1}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              padding: "1.5rem",
+              borderRadius: "8px",
+              maxWidth: "320px",
+              width: "100%",
+              position: "relative",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowLangSelector(false)}
+              style={{
+                position: "absolute",
+                top: "0.5rem",
+                right: "0.5rem",
+                border: "none",
+                background: "none",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                color: "#555",
+              }}
+              aria-label="Închide"
+            >
+              ×
+            </button>
+            <h2>Selectează limba</h2>
+            <ul style={{ listStyle: "none", padding: 0, marginTop: "1rem" }}>
+              <li style={{ padding: "0.5rem 0", cursor: "pointer" }}>Română</li>
+              <li style={{ padding: "0.5rem 0", cursor: "pointer" }}>English</li>
+              <li style={{ padding: "0.5rem 0", cursor: "pointer" }}>Franceză</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

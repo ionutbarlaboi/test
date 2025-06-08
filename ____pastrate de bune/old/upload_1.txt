@@ -1,0 +1,72 @@
+"use client";
+import { useState } from "react";
+
+export default function UploadTestPage() {
+  const [testName, setTestName] = useState("test1");
+  const [fileName, setFileName] = useState("");
+  const [status, setStatus] = useState("");
+  const [content, setContent] = useState(null);
+
+  const handleFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const json = JSON.parse(event.target.result);
+        if (!Array.isArray(json)) {
+          setStatus("Fișier invalid: nu este un array de întrebări.");
+        } else {
+          setContent(json);
+          setStatus("Fișier valid! Salvează-l ca: public/testul" + testName.replace("test", "") + ".json");
+        }
+      } catch (err) {
+        setStatus("Eroare la citirea fișierului: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: "600px", margin: "auto", textAlign: "center" }}>
+      <h2 style={{ fontSize: "22px", fontWeight: "bold", marginBottom: "1rem" }}>
+        Încărcare test JSON
+      </h2>
+
+      <label style={{ fontWeight: "bold" }}>Alege testul:</label>
+      <select
+        value={testName}
+        onChange={(e) => setTestName(e.target.value)}
+        style={{ margin: "1rem", padding: "6px", fontSize: "16px" }}
+      >
+        <option value="test1">Test 1</option>
+        <option value="test2">Test 2</option>
+        <option value="test3">Test 3</option>
+        <option value="test4">Test 4</option>
+      </select>
+
+      <div style={{ marginTop: "1rem" }}>
+        <input type="file" accept=".json" onChange={handleFile} />
+      </div>
+
+      {status && (
+        <p style={{ marginTop: "1rem", fontWeight: "bold", color: status.includes("valid") ? "green" : "red" }}>
+          {status}
+        </p>
+      )}
+
+      {content && (
+        <div style={{ marginTop: "2rem", fontSize: "14px", textAlign: "left" }}>
+          <p style={{ fontWeight: "bold" }}>Previzualizare întrebări ({content.length}):</p>
+          <ul>
+            {content.slice(0, 5).map((q, i) => (
+              <li key={i}>{i + 1}. {q.text?.slice(0, 100)}</li>
+            ))}
+          </ul>
+          {content.length > 5 && <p>... și altele</p>}
+        </div>
+      )}
+    </div>
+  );
+}
