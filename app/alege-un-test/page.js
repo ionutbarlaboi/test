@@ -61,7 +61,7 @@ export default function SelectTestPage() {
             display: "flex",
             flexWrap: "wrap",
             justifyContent: "center",
-            gap: "1rem",
+            gap: "2rem",
           }}
         >
           {tests.length > 0 ? (
@@ -70,7 +70,7 @@ export default function SelectTestPage() {
                 key={test}
                 onClick={() => router.push(`/${test}`)}
                 style={{
-                  width: "25%",
+                  width: "30%",
                   padding: "8px",
                   fontSize: "15px",
                   borderRadius: "6px",
