@@ -1,0 +1,26 @@
+[
+  {
+    "text": "Cât este $2^3 + 1$?",
+    "options": ["$6$", "$7$", "$8$", "$9$"],
+    "correct": 2,
+    "explanation": "Puterea: $2^3 = 8$, apoi $8 + 1 = 9$. Deci răspunsul corect era $9$.",
+    "image": null,
+    "explanationImage": null
+  },
+  {
+    "text": "Rezolvă ecuația: $x + 3 = 7$",
+    "options": ["$x = 3$", "$x = 4$", "$x = 5$", "$x = 6$"],
+    "correct": 1,
+    "explanation": "Scade 3 din ambele părți: $x = 7 - 3 = 4$",
+    "image": null,
+    "explanationImage": null
+  },
+  {
+    "text": "Care este valoarea lui $\\frac{10}{2}$?",
+    "options": ["$2$", "$4$", "$5$", "$10$"],
+    "correct": 2,
+    "explanation": "$\\frac{10}{2} = 5$",
+    "image": null,
+    "explanationImage": null
+  }
+]
