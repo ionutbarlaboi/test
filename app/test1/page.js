@@ -2,21 +2,32 @@
 
 import { useState, useEffect } from "react";
 import "katex/dist/katex.min.css";
-import { InlineMath } from "react-katex";
+import { InlineMath, BlockMath } from "react-katex";
 
-function renderWithLatex(text) {
+
+export function renderWithLatex(text) {
   if (!text) return null;
-  const parts = text.split(/(\$[^$]+\$)/g);
+
+  // Împarte textul în părți: block $$...$$, inline $...$, și text normal
+  const parts = text.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+
   return parts.map((part, index) => {
+    if (part.startsWith("$$") && part.endsWith("$$")) {
+      const formula = part.slice(2, -2);
+      return <BlockMath key={index} math={formula} />;
+    }
+
     if (part.startsWith("$") && part.endsWith("$")) {
       const formula = part.slice(1, -1);
-      return (
-        <span key={index} className="latex-inline-wrapper">
-          <InlineMath math={formula} />
-        </span>
-      );
+      return <InlineMath key={index} math={formula} />;
     }
-    return <span key={index}>{part}</span>;
+
+    // Text normal, păstrăm ENTER-urile
+    return (
+      <span key={index} style={{ whiteSpace: "pre-line" }}>
+        {part}
+      </span>
+    );
   });
 }
 

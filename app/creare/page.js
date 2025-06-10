@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import "katex/dist/katex.min.css";
-import { InlineMath } from "react-katex";
+import { InlineMath, BlockMath } from "react-katex";
 
 export default function AdminPage() {
   const [testName, setTestName] = useState("testul1");
@@ -30,17 +30,34 @@ export default function AdminPage() {
     alert("Testul a fost salvat local.");
   };
 
-  const renderLatex = (text) => {
-    if (!text) return null;
-    const parts = text.split(/(\$[^$]+\$)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith("$") && part.endsWith("$")) {
-        return <InlineMath key={i}>{part.slice(1, -1)}</InlineMath>;
-      } else {
-        return <span key={i}>{part}</span>;
-      }
-    });
-  };
+
+   
+  function renderLatex(text) {
+  const parts = text.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith('$$') && part.endsWith('$$')) {
+          return <BlockMath key={index}>{part.slice(2, -2)}</BlockMath>;
+        } else if (part.startsWith('$') && part.endsWith('$')) {
+          return <InlineMath key={index}>{part.slice(1, -1)}</InlineMath>;
+        } else {
+          const lines = part.split('\n');
+          return lines.map((line, lineIndex) => (
+            <span key={`${index}-${lineIndex}`}>
+              {line}
+              {lineIndex < lines.length - 1 && <br />}
+            </span>
+          ));
+        }
+      })}
+    </>
+   );
+ }
+
+
+
 
   const handleAddQuestion = () => {
     setQuestions([
