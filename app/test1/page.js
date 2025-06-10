@@ -5,31 +5,45 @@ import "katex/dist/katex.min.css";
 import { InlineMath, BlockMath } from "react-katex";
 
 
+
 export function renderWithLatex(text) {
   if (!text) return null;
 
-  // Împarte textul în părți: block $$...$$, inline $...$, și text normal
+  // sparge în părți block, inline și text normal
   const parts = text.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
 
-  return parts.map((part, index) => {
-    if (part.startsWith("$$") && part.endsWith("$$")) {
-      const formula = part.slice(2, -2);
-      return <BlockMath key={index} math={formula} />;
-    }
+  return (
+    <div style={{ textAlign: 'justify' }}>
+      {parts.map((part, index) => {
+        if (part.startsWith('$$') && part.endsWith('$$')) {
+          const formula = part.slice(2, -2);
+          return <BlockMath key={index} math={formula} />;
+        }
 
-    if (part.startsWith("$") && part.endsWith("$")) {
-      const formula = part.slice(1, -1);
-      return <InlineMath key={index} math={formula} />;
-    }
+        if (part.startsWith('$') && part.endsWith('$')) {
+          const formula = part.slice(1, -1);
+          return (
+            <span key={index} style={{ whiteSpace: 'nowrap' }}>
+              <InlineMath math={formula} />
+            </span>
+          );
+        }
 
-    // Text normal, păstrăm ENTER-urile
-    return (
-      <span key={index} style={{ whiteSpace: "pre-line" }}>
-        {part}
-      </span>
-    );
-  });
+        // text normal păstrăm ENTER și spații
+        return (
+          <span key={index} style={{ whiteSpace: 'pre-wrap' }}>
+            {part}
+          </span>
+        );
+      })}
+    </div>
+  );
 }
+
+
+
+
+
 
 
 export default function Test1() {
