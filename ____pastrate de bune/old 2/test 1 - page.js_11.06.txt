@@ -2,23 +2,49 @@
 
 import { useState, useEffect } from "react";
 import "katex/dist/katex.min.css";
-import { InlineMath } from "react-katex";
+import { InlineMath, BlockMath } from "react-katex";
 
-function renderWithLatex(text) {
+
+
+export function renderWithLatex(text) {
   if (!text) return null;
-  const parts = text.split(/(\$[^$]+\$)/g);
-  return parts.map((part, index) => {
-    if (part.startsWith("$") && part.endsWith("$")) {
-      const formula = part.slice(1, -1);
-      return (
-        <span key={index} className="latex-inline-wrapper">
-          <InlineMath math={formula} />
-        </span>
-      );
-    }
-    return <span key={index}>{part}</span>;
-  });
+
+  // sparge în părți block, inline și text normal
+  const parts = text.split(/(\$\$[^$]+\$\$|\$[^$]+\$)/g);
+
+  return (
+    <div style={{ textAlign: 'justify' }}>
+      {parts.map((part, index) => {
+        if (part.startsWith('$$') && part.endsWith('$$')) {
+          const formula = part.slice(2, -2);
+          return <BlockMath key={index} math={formula} />;
+        }
+
+        if (part.startsWith('$') && part.endsWith('$')) {
+          const formula = part.slice(1, -1);
+          return (
+            <span key={index} style={{ whiteSpace: 'nowrap' }}>
+              <InlineMath math={formula} />
+            </span>
+          );
+        }
+
+        // text normal păstrăm ENTER și spații
+        return (
+          <span key={index} style={{ whiteSpace: 'pre-wrap' }}>
+            {part}
+          </span>
+        );
+      })}
+    </div>
+  );
 }
+
+
+
+
+
+
 
 export default function Test1() {
   const [questions, setQuestions] = useState([]);
@@ -29,21 +55,17 @@ export default function Test1() {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-  fetch("/testul1.json")
-    .then((res) => res.json())
-    .then((data) => {
-      const combinedQuestions = [...data.I, ...data.II];
-      setQuestions(combinedQuestions);
-      setAnswered(Array(combinedQuestions.length).fill(null));
-    })
-    .catch((e) => console.error("Eroare la încărcare test:", e));
-}, []);
+    fetch("/testul1.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setQuestions(data);
+        setAnswered(Array(data.length).fill(null));
+      });
+  }, []);
 
   if (!questions.length) return <p>Se încarcă testul...</p>;
 
   const q = questions[index];
-  const subiectText = q.subiect ? `Subiectul ${q.subiect}` : ""; // Ex: "Subiectul I"
-
   const handleAnswer = (i) => {
     if (selected !== null || answered[index] !== null) return;
     const isCorrect = i === q.correct;
@@ -82,14 +104,8 @@ export default function Test1() {
         style={{
           fontSize: "28px",
           fontWeight: "bold",
-          marginBottom: "1rem",
-          background: "linear-gradient(90deg, #0070f3, #00c6ff)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          animation: "pulse 2s infinite",
-          textAlign: "center",
-          borderBottom: "2px solid #0070f3",
-          display: "inline-block",
+          marginBottom: "1.5rem",
+          textDecoration: "underline",
         }}
       >
         Testul 1
@@ -97,60 +113,21 @@ export default function Test1() {
 
       {finished ? (
         <>
-          {(() => {
-            const percentage = (score / questions.length) * 100;
-            let message = "";
-            let bgColor = "";
-            if (percentage === 100) {
-              message = "💪 Perfect! Ești un campion!";
-              bgColor = "#d1e7dd"; // verde deschis
-            } else if (percentage > 80) {
-              message = "🎉 Foarte bine! Mai e puțin! ";
-              bgColor = "#e0f2ff"; // albastru foarte deschis
-            } else if (percentage > 50) {
-              message = "🙂 E bine! Continuă să exersezi!";
-              bgColor = "#fff3cd"; // galben
-            } else {
-              message = "⚠️ Nu renunța! Exersează mai mult și vei reuși!";
-              bgColor = "#f8d7da"; // roșu deschis
-            }
-
-            return (
-              <div
-                style={{
-                  backgroundColor: bgColor,
-                  padding: "16px",
-                  borderRadius: "10px",
-                  border: "1px solid #ccc",
-                  textAlign: "center",
-                  marginBottom: "2rem",
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: "22px",
-                    fontWeight: "bold",
-                    color: "black",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  {message}
-                </p>
-                <p style={{ fontSize: "16px", color: "black" }}>
-                  Ai răspuns corect la {score} din {questions.length} întrebări.
-                </p>
-              </div>
-            );
-          })()}
-
-          <div
+          <p
             style={{
-              marginTop: "2rem",
-              display: "flex",
-              justifyContent: "center",
-              gap: "2rem",
+              fontSize: "20px",
+              fontWeight: "bold",
+              backgroundColor: "#f0f9ff",
+              border: "1px solid #b6e0fe",
+              padding: "10px",
+              borderRadius: "8px",
+              color: "#0070f3",
             }}
           >
+            Ai răspuns corect la {score} din {questions.length} întrebări.
+          </p>
+
+          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center", gap: "2rem" }}>
             <p
               style={{ textDecoration: "underline", cursor: "pointer", color: "#0070f3" }}
               onClick={() => (window.location.href = "/alege-un-test")}
@@ -165,14 +142,7 @@ export default function Test1() {
             </p>
           </div>
 
-          <div
-            style={{
-              marginTop: "2rem",
-              display: "flex",
-              justifyContent: "center",
-              gap: "1rem",
-            }}
-          >
+          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
             <button
               style={{
                 padding: "6px 14px",
@@ -242,58 +212,41 @@ export default function Test1() {
               textAlign: "left",
             }}
           >
-            {/* Afișare subiect, centrat */}
-            {subiectText && (
-              <p
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "23px",
-                  marginTop: "0",
-                  marginBottom: "0.8rem",
-                  textAlign: "center",
-                  textDecoration: "underline",
-                }}
-              >
-                {subiectText}
-              </p>
-            )}
-
-            {/* Exercițiul X aliniat stanga */}
-            <div style={{ marginBottom: "1rem" }}>
-              <p
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                  textAlign: "left",
-                  marginBottom: "0.5rem",
-                  textDecoration: "underline",
-                }}
-              >
-                Exercițiul {index + 1}
-              </p>
-              <p style={{ fontSize: "18px", fontWeight: "bold", textAlign: "justify" }}>
-                {renderWithLatex(q.text)}
-              </p>
-            </div>
+              
+              <div style={{ marginBottom: "1rem" }}>
+                <p
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                    marginBottom: "0.5rem",
+                    textDecoration: "underline",
+                  }}
+                >
+                  Exercițiul {index + 1}
+                </p>
+                <p style={{ fontSize: "18px", fontWeight: "bold", textAlign: "left" }}>
+                  {renderWithLatex(q.text)}
+                </p>
+              </div>
+            
 
             {q.image && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
-                <img
-                  src={q.image}
-                  alt="Întrebare"
-                  style={{ maxWidth: "100%", maxHeight: "300px" }}
-                />
+                <img src={q.image} alt="Întrebare" style={{ maxWidth: "100%", maxHeight: "300px" }} />
               </div>
             )}
 
-            <div>
+            <div >
               {q.options.map((opt, i) => (
                 <button
                   key={i}
                   onClick={() => handleAnswer(i)}
                   disabled={selected !== null || answered[index] !== null}
                   style={{
-                    display: "inline-block",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     width: "48%",
                     fontSize: "20px",
                     marginBottom: "0.5rem",
@@ -333,9 +286,7 @@ export default function Test1() {
               <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "0.5rem" }}>
                 {selected === q.correct ? "Răspuns corect" : "Răspuns greșit"}
               </p>
-              {q.explanation && (
-                <div style={{ whiteSpace: "pre-wrap" }}>{renderWithLatex(q.explanation)}</div>
-              )}
+              {q.explanation && <p>{renderWithLatex(q.explanation)}</p>}
               {q.explanationImage && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
                   <img
@@ -351,7 +302,10 @@ export default function Test1() {
           <div style={{ marginTop: "2rem", textAlign: "right" }}>
             {selected === null ? (
               answered.filter((a) => a === null).length > 1 ? (
-                <span onClick={goNext} className="button-link">
+                <span
+                  onClick={goNext}
+                  className="button-link"
+                >
                   Revin mai târziu →
                 </span>
               ) : null
