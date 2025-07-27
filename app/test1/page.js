@@ -223,13 +223,18 @@ export default function Test1() {
                     {i + 1}. {renderWithLatex(q.text)}
                   </strong>
                 </p>
-                <p>
-                  Răspunsul tău:{" "}
-                  <span style={{ fontWeight: "bold", marginRight: "2rem" }}>
-                    {renderWithLatex(q.options[answered[i] === true ? q.correct : selected])}
-                  </span>
-                  Răspuns corect: <strong>{renderWithLatex(q.options[q.correct])}</strong>
-                </p>
+
+
+                <div>
+                  <p style={{ marginBottom: "0.2rem" }}>
+                   <strong>Răspunsul tău:</strong><br />
+                   {renderWithLatex(q.options[answered[i] === true ? q.correct : selected])}
+                  </p>
+                  <p>
+                    <strong>Răspuns corect:</strong><br />
+                    {renderWithLatex(q.options[q.correct])}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -274,7 +279,7 @@ export default function Test1() {
               >
                 Exercițiul {q.nr}
               </p>
-              <p style={{ fontSize: "18px", fontWeight: "bold", textAlign: "justify" }}>
+              <p style={{ fontSize: "18px", textAlign: "left" }}>
                 {renderWithLatex(q.text)}
               </p>
             </div>
@@ -337,7 +342,14 @@ export default function Test1() {
                 {selected === q.correct ? "Răspuns corect" : "Răspuns greșit"}
               </div>
               {q.explanation && (
-                <div style={{ whiteSpace: "pre-wrap", fontWeight: "normal" }}>{renderWithLatex(q.explanation)}</div>
+                <div 
+                  style={{ 
+                    whiteSpace: "pre-wrap", 
+                    fontWeight: "normal", 
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}>{renderWithLatex(q.explanation)}
+                </div>
               )}
               {q.explanationImage && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
