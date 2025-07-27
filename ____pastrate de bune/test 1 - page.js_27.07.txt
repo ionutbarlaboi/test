@@ -32,10 +32,7 @@ export default function Test1() {
   fetch("/testul1.json")
     .then((res) => res.json())
     .then((data) => {
-      const combinedQuestions = [
-        ...data.I.map((q, idx) => ({ ...q, subiect: "I", nr: idx + 1 })),
-        ...data.II.map((q, idx) => ({ ...q, subiect: "II", nr: idx + 1 })),
-      ];
+      const combinedQuestions = [...data.I, ...data.II];
       setQuestions(combinedQuestions);
       setAnswered(Array(combinedQuestions.length).fill(null));
     })
@@ -272,7 +269,7 @@ export default function Test1() {
                   textDecoration: "underline",
                 }}
               >
-                Exercițiul {q.nr}
+                Exercițiul {index + 1}
               </p>
               <p style={{ fontSize: "18px", fontWeight: "bold", textAlign: "justify" }}>
                 {renderWithLatex(q.text)}
@@ -333,11 +330,11 @@ export default function Test1() {
                 textAlign: "left",
               }}
             >
-              <div style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "0.5rem" }}>
+              <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "0.5rem" }}>
                 {selected === q.correct ? "Răspuns corect" : "Răspuns greșit"}
-              </div>
+              </p>
               {q.explanation && (
-                <div style={{ whiteSpace: "pre-wrap", fontWeight: "normal" }}>{renderWithLatex(q.explanation)}</div>
+                <div style={{ whiteSpace: "pre-wrap" }}>{renderWithLatex(q.explanation)}</div>
               )}
               {q.explanationImage && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
@@ -387,11 +384,11 @@ export default function Test1() {
               fontSize: "16px",
             }}
           >
-            Răspunsuri corecte {answered.filter(Boolean).length}
+            Răspunsuri corecte {answered.filter(Boolean).length}/{questions.length}
           </p>
           <p
             style={{
-              color: "red",
+              color: "black",
               fontSize: "14px",
               textAlign: "center",
               marginTop: "-0.3rem",

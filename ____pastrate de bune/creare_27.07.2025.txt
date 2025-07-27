@@ -6,7 +6,7 @@ import { InlineMath, BlockMath } from "react-katex";
 
 
 export default function TestEditorWithSections() {
-  const [testName, setTestName] = useState("testul");
+  const [testName, setTestName] = useState("Test");
   const [sections, setSections] = useState({ I: [], II: [] });
 
   // funcție pentru randare LaTeX, presupun că ai deja
@@ -306,10 +306,6 @@ function renderLatex(text) {
         </div>
       ))}
 
-     <button onClick={() => handleAddQuestion("I")} style={{ marginTop: "1rem" }}>
-        + Adaugă întrebare Subiectul I
-      </button>
-
       <h2>Subiectul II</h2>
       {sections.II.map((q, index) => (
         <div
@@ -465,6 +461,9 @@ function renderLatex(text) {
         </div>
       ))}
 
+      <button onClick={() => handleAddQuestion("I")} style={{ marginTop: "1rem" }}>
+        + Adaugă întrebare Subiectul I
+      </button>
       <button onClick={() => handleAddQuestion("II")} style={{ marginTop: "1rem" }}>
         + Adaugă întrebare Subiectul II
       </button>
