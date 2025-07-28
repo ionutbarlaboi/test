@@ -208,35 +208,53 @@ export default function Test1() {
 
           <div style={{ textAlign: "left", marginTop: "2rem" }}>
             <p style={{ fontWeight: "bold" }}>Iată cum ai răspuns:</p>
-            {questions.map((q, i) => (
-              <div
-                key={i}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  backgroundColor: answered[i] ? "#d1e7dd" : "#f8d7da",
-                }}
-              >
-                <p>
-                  <strong>
-                    {i + 1}. {renderWithLatex(q.text)}
-                  </strong>
+            
+
+              {["I", "II"].map((sub) => (
+               <div key={sub}>
+                <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "1rem", marginTop: "2rem" }}>
+                  Subiectul {sub}
                 </p>
+                {questions
+                  .filter((q) => q.subiect === sub)
+                  .map((q, i) => {
+                    const realIndex = questions.findIndex(
+                     (qq) => qq.subiect === sub && qq.nr === q.nr
+                    );
+                    return (
+                     <div
+                      key={realIndex}
+                      style={{
+                       marginBottom: "1rem",
+                       padding: "1rem",
+                       borderRadius: "8px",
+                       backgroundColor: answered[realIndex] ? "#d1e7dd" : "#f8d7da",
+                      }}
+                     >
+                      <p>
+                       {q.nr}. {renderWithLatex(q.text)}
+                      </p>
+                      <p style={{ marginBottom: "0.2rem", fontWeight: "normal" }}>
+                        <strong>Răspunsul tău:</strong>{" "}
+                        <span style={{ fontWeight: "normal", fontWeight: "normal" }}>
+                          {renderWithLatex(
+                            q.options[answered[realIndex] === true ? q.correct : selected]
+                          )}
+                        </span>
+                      </p>
+                      <p style={{ marginTop: 0 }}>
+                        <strong>Răspuns corect:</strong>{" "}
+                        <span style={{ fontWeight: "normal" }}>
+                          {renderWithLatex(q.options[q.correct])}
+                        </span>
+                      </p>
+                    </div>
+                    );
+                   })}
+                 </div>
+              ))}
 
 
-                <div>
-                  <p style={{ marginBottom: "0.2rem" }}>
-                   <strong>Răspunsul tău:</strong><br />
-                   {renderWithLatex(q.options[answered[i] === true ? q.correct : selected])}
-                  </p>
-                  <p>
-                    <strong>Răspuns corect:</strong><br />
-                    {renderWithLatex(q.options[q.correct])}
-                  </p>
-                </div>
-              </div>
-            ))}
           </div>
         </>
       ) : (
