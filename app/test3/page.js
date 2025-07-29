@@ -20,7 +20,6 @@ function renderWithLatex(text) {
   });
 }
 
-
 export default function Test3() {
   const [questions, setQuestions] = useState([]);
   const [index, setIndex] = useState(0);
@@ -30,17 +29,24 @@ export default function Test3() {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    fetch("/testul3.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setQuestions(data);
-        setAnswered(Array(data.length).fill(null));
-      });
-  }, []);
+  fetch("/testul3.json")
+    .then((res) => res.json())
+    .then((data) => {
+      const combinedQuestions = [
+        ...data.I.map((q, idx) => ({ ...q, subiect: "I", nr: idx + 1 })),
+        ...data.II.map((q, idx) => ({ ...q, subiect: "II", nr: idx + 1 })),
+      ];
+      setQuestions(combinedQuestions);
+      setAnswered(Array(combinedQuestions.length).fill(null));
+    })
+    .catch((e) => console.error("Eroare la încărcare test:", e));
+}, []);
 
   if (!questions.length) return <p>Se încarcă testul...</p>;
 
   const q = questions[index];
+  const subiectText = q.subiect ? `Subiectul ${q.subiect}` : ""; // Ex: "Subiectul I"
+
   const handleAnswer = (i) => {
     if (selected !== null || answered[index] !== null) return;
     const isCorrect = i === q.correct;
@@ -79,8 +85,14 @@ export default function Test3() {
         style={{
           fontSize: "28px",
           fontWeight: "bold",
-          marginBottom: "1.5rem",
-          textDecoration: "underline",
+          marginBottom: "1rem",
+          background: "linear-gradient(90deg, #0070f3, #00c6ff)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          animation: "pulse 2s infinite",
+          textAlign: "center",
+          borderBottom: "2px solid #0070f3",
+          display: "inline-block",
         }}
       >
         Testul 3
@@ -88,21 +100,60 @@ export default function Test3() {
 
       {finished ? (
         <>
-          <p
+          {(() => {
+            const percentage = (score / questions.length) * 100;
+            let message = "";
+            let bgColor = "";
+            if (percentage === 100) {
+              message = "💪 Perfect! Ești un campion!";
+              bgColor = "#d1e7dd"; // verde deschis
+            } else if (percentage > 80) {
+              message = "🎉 Foarte bine! Mai e puțin! ";
+              bgColor = "#e0f2ff"; // albastru foarte deschis
+            } else if (percentage > 50) {
+              message = "🙂 E bine! Continuă să exersezi!";
+              bgColor = "#fff3cd"; // galben
+            } else {
+              message = "⚠️ Nu renunța! Exersează mai mult și vei reuși!";
+              bgColor = "#f8d7da"; // roșu deschis
+            }
+
+            return (
+              <div
+                style={{
+                  backgroundColor: bgColor,
+                  padding: "16px",
+                  borderRadius: "10px",
+                  border: "1px solid #ccc",
+                  textAlign: "center",
+                  marginBottom: "2rem",
+                }}
+              >
+                <p
+                  style={{
+                    fontSize: "22px",
+                    fontWeight: "bold",
+                    color: "black",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  {message}
+                </p>
+                <p style={{ fontSize: "16px", color: "black" }}>
+                  Ai răspuns corect la {score} din {questions.length} întrebări.
+                </p>
+              </div>
+            );
+          })()}
+
+          <div
             style={{
-              fontSize: "20px",
-              fontWeight: "bold",
-              backgroundColor: "#f0f9ff",
-              border: "1px solid #b6e0fe",
-              padding: "10px",
-              borderRadius: "8px",
-              color: "#0070f3",
+              marginTop: "2rem",
+              display: "flex",
+              justifyContent: "center",
+              gap: "2rem",
             }}
           >
-            Ai răspuns corect la {score} din {questions.length} întrebări.
-          </p>
-
-          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center", gap: "2rem" }}>
             <p
               style={{ textDecoration: "underline", cursor: "pointer", color: "#0070f3" }}
               onClick={() => (window.location.href = "/alege-un-test")}
@@ -117,7 +168,14 @@ export default function Test3() {
             </p>
           </div>
 
-          <div style={{ marginTop: "2rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
+          <div
+            style={{
+              marginTop: "2rem",
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+            }}
+          >
             <button
               style={{
                 padding: "6px 14px",
@@ -150,30 +208,53 @@ export default function Test3() {
 
           <div style={{ textAlign: "left", marginTop: "2rem" }}>
             <p style={{ fontWeight: "bold" }}>Iată cum ai răspuns:</p>
-            {questions.map((q, i) => (
-              <div
-                key={i}
-                style={{
-                  marginBottom: "1rem",
-                  padding: "1rem",
-                  borderRadius: "8px",
-                  backgroundColor: answered[i] ? "#d1e7dd" : "#f8d7da",
-                }}
-              >
-                <p>
-                  <strong>
-                    {i + 1}. {renderWithLatex(q.text)}
-                  </strong>
+            
+
+              {["I", "II"].map((sub) => (
+               <div key={sub}>
+                <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "1rem", marginTop: "2rem" }}>
+                  Subiectul {sub}
                 </p>
-                <p>
-                  Răspunsul tău:{" "}
-                  <span style={{ fontWeight: "bold", marginRight: "2rem" }}>
-                    {renderWithLatex(q.options[answered[i] === true ? q.correct : selected])}
-                  </span>
-                  Răspuns corect: <strong>{renderWithLatex(q.options[q.correct])}</strong>
-                </p>
-              </div>
-            ))}
+                {questions
+                  .filter((q) => q.subiect === sub)
+                  .map((q, i) => {
+                    const realIndex = questions.findIndex(
+                     (qq) => qq.subiect === sub && qq.nr === q.nr
+                    );
+                    return (
+                     <div
+                      key={realIndex}
+                      style={{
+                       marginBottom: "1rem",
+                       padding: "1rem",
+                       borderRadius: "8px",
+                       backgroundColor: answered[realIndex] ? "#d1e7dd" : "#f8d7da",
+                      }}
+                     >
+                      <p>
+                       {q.nr}. {renderWithLatex(q.text)}
+                      </p>
+                      <p style={{ marginBottom: "0.2rem", fontWeight: "normal" }}>
+                        <strong>Răspunsul tău:</strong>{" "}
+                        <span style={{ fontWeight: "normal", fontWeight: "normal" }}>
+                          {renderWithLatex(
+                            q.options[answered[realIndex] === true ? q.correct : selected]
+                          )}
+                        </span>
+                      </p>
+                      <p style={{ marginTop: 0 }}>
+                        <strong>Răspuns corect:</strong>{" "}
+                        <span style={{ fontWeight: "normal" }}>
+                          {renderWithLatex(q.options[q.correct])}
+                        </span>
+                      </p>
+                    </div>
+                    );
+                   })}
+                 </div>
+              ))}
+
+
           </div>
         </>
       ) : (
@@ -187,28 +268,47 @@ export default function Test3() {
               textAlign: "left",
             }}
           >
-              
-              <div style={{ marginBottom: "1rem" }}>
-                <p
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    marginBottom: "0.5rem",
-                    textDecoration: "underline",
-                  }}
-                >
-                  Exercițiul {index + 1}
-                </p>
-                <p style={{ fontSize: "18px", fontWeight: "bold", textAlign: "left" }}>
-                  {renderWithLatex(q.text)}
-                </p>
-              </div>
-            
+            {/* Afișare subiect, centrat */}
+            {subiectText && (
+              <p
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "23px",
+                  marginTop: "0",
+                  marginBottom: "0.8rem",
+                  textAlign: "center",
+                  textDecoration: "underline",
+                }}
+              >
+                {subiectText}
+              </p>
+            )}
+
+            {/* Exercițiul X aliniat stanga */}
+            <div style={{ marginBottom: "1rem" }}>
+              <p
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                  textAlign: "left",
+                  marginBottom: "0.5rem",
+                  textDecoration: "underline",
+                }}
+              >
+                Exercițiul {q.nr}
+              </p>
+              <p style={{ fontSize: "18px", textAlign: "left" }}>
+                {renderWithLatex(q.text)}
+              </p>
+            </div>
 
             {q.image && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
-                <img src={q.image} alt="Întrebare" style={{ maxWidth: "100%", maxHeight: "300px" }} />
+                <img
+                  src={q.image}
+                  alt="Întrebare"
+                  style={{ maxWidth: "100%", maxHeight: "300px" }}
+                />
               </div>
             )}
 
@@ -256,10 +356,19 @@ export default function Test3() {
                 textAlign: "left",
               }}
             >
-              <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "0.5rem" }}>
+              <div style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "0.5rem" }}>
                 {selected === q.correct ? "Răspuns corect" : "Răspuns greșit"}
-              </p>
-              {q.explanation && <p>{renderWithLatex(q.explanation)}</p>}
+              </div>
+              {q.explanation && (
+                <div 
+                  style={{ 
+                    whiteSpace: "pre-wrap", 
+                    fontWeight: "normal", 
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}>{renderWithLatex(q.explanation)}
+                </div>
+              )}
               {q.explanationImage && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
                   <img
@@ -275,10 +384,7 @@ export default function Test3() {
           <div style={{ marginTop: "2rem", textAlign: "right" }}>
             {selected === null ? (
               answered.filter((a) => a === null).length > 1 ? (
-                <span
-                  onClick={goNext}
-                  className="button-link"
-                >
+                <span onClick={goNext} className="button-link">
                   Revin mai târziu →
                 </span>
               ) : null
@@ -311,11 +417,11 @@ export default function Test3() {
               fontSize: "16px",
             }}
           >
-            Răspunsuri corecte {answered.filter(Boolean).length}/{questions.length}
+            Răspunsuri corecte {answered.filter(Boolean).length}
           </p>
           <p
             style={{
-              color: "black",
+              color: "red",
               fontSize: "14px",
               textAlign: "center",
               marginTop: "-0.3rem",
