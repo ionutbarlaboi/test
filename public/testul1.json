@@ -51,7 +51,7 @@
         "2,22"
       ],
       "correct": 3,
-      "explanation": "Identificăm cifra sutimilor și miimilor: 2,(2) = 2,222222...\n• sutimi = a doua cifră după virgulă → 2\n• miimi = a treia cifră după virgulă → tot 2\n\nRegula rotunjirii:\n• dacă cifra următoare este ≥ 5, adăugăm 1 la sutimi.\n• dacă este < 5, lăsăm sutimile neschimbate.\n\nAici, cifra următoare este 2 (miimi) → deci nu rotunjim în sus.\n\nAșadar 2,(2) rotunjit la sutimi = 2,22\n",
+      "explanation": "Identificăm cifra sutimilor și miimilor: 2,(2) = 2,222222...\n• sutimi = a doua cifră după virgulă → 2\n• miimi = a treia cifră după virgulă → 2\n\nRegula rotunjirii:\n• dacă cifra următoare este ≥ 5, adăugăm 1 la sutimi.\n• dacă este < 5, lăsăm sutimile neschimbate.\n\nAici, cifra următoare este 2 (miimi) → deci nu rotunjim în sus.\n\nAșadar 2,(2) rotunjit la sutimi = 2,22\n",
       "image": null,
       "explanationImage": null,
       "subiect": "I"
