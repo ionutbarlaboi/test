@@ -12,7 +12,13 @@ export default function SelectTestPage() {
         const res = await fetch("/api/tests");
         if (res.ok) {
           const data = await res.json();
-          setTests(data);
+          const sorted = data.sort((a, b) => {
+            const numA = parseInt(a.replace("test", ""), 10);
+            const numB = parseInt(b.replace("test", ""), 10);
+            return numA - numB;
+          });
+
+          setTests(sorted);
         } else {
           setTests([]);
         }
