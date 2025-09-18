@@ -207,7 +207,7 @@ export default function Test7() {
           </div>
 
           <div style={{ textAlign: "left", marginTop: "2rem" }}>
-            <p style={{ fontWeight: "bold" }}>Iată cum ai răspuns:</p>
+            <p style={{ fontWeight: "bold", fontSize: "18px" }}>Iată cum ai răspuns:</p>
             
 
               {["I", "II"].map((sub) => (
