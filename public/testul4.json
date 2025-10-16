@@ -45,10 +45,10 @@
     {
       "text": "În tabelul de mai jos este prezentată oferta cu reduceri de prețuri pentru două produse, în funcție de numărul de produse cumpărate. Știind că un cumpărător a achiziționat 5 sticle de ulei și 3 pungi de zahăr, prețul total plătit de acesta în urma aplicării reducerilor este:",
       "options": [
-        "45,6",
-        "43",
-        "52",
-        "43,6"
+        "45,6 lei",
+        "43 lei",
+        "52 lei",
+        "43,6 lei"
       ],
       "correct": 3,
       "explanation": "Ulei: \n5x8=40 lei preț întreg\n0,15x40=6 lei reducerea\n40-6=34 lei preț după reducere\n\nZahăr: \n3x4=12 lei preț întreg\n0,20x12=2,4 lei reducerea\n12-2,4=9,6 lei preț după reducere\n\n34+9,6=43,6 lei total\n",
@@ -87,12 +87,12 @@
   ],
   "II": [
     {
-      "text": "În figura de mai jos sunt reprezentate, în această ordine, punctele coliniare A, B, C, D și E astfel încât distanța dintre oricare două puncte consecutive este de 3cm. Distanța dintre simetricul punctului A față de punctul B și simetricul punctului E față de punctul C este egală cu:\n",
+      "text": "În figura de mai jos sunt reprezentate, în această ordine, punctele coliniare A, B, C, D și E astfel încât distanța dintre oricare două puncte consecutive este de 3 cm. Distanța dintre simetricul punctului A față de punctul B și simetricul punctului E față de punctul C este egală cu:\n",
       "options": [
-        "3",
-        "9",
-        "6",
-        "12"
+        "3 cm",
+        "9 cm",
+        "6 cm",
+        "12 cm"
       ],
       "correct": 2,
       "explanation": "Simetricul lui A față de B este C\nSimetricul lui E față de C este A\nAC=6 cm",

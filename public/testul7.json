@@ -73,10 +73,10 @@
     {
       "text": "Într-o școală, 500 de elevi au ales culoarea favorită, prin intermediul unui chestionar. Opțiunile tuturor elevilor au fost înregistrate, în raport procentual din numărul total, în tabelul de mai jos. Conform informațiilor din tabel, numărul elevilor care au ales culoarea roșu este egal cu:",
       "options": [
-        "100",
-        "150",
-        "250",
-        "300"
+        "100 elevi",
+        "150 elevi",
+        "250 elevi",
+        "300 elevi"
       ],
       "correct": 1,
       "explanation": "100%-20%-15%-35%=30%\n\n$30\\% \\cdot 500 = \\frac{30}{100} \\cdot 500 = 150$ elevi\n\n",
@@ -131,10 +131,10 @@
     {
       "text": "Se consideră schița unei grădini având forma unui romb ABCD cu AB=20 m și AB=BD. Pe suprafața delimitată de patrulaterul EFGH , ale cărui vârfuri sunt mijloacele laturilor rombului dat, sunt cultivate flori, iar restul suprafeței grădinii este acoperit cu gazon. Aria suprafeței grădinii, acoperite de gazon, este egală cu:",
       "options": [
-        "$10\\sqrt{3}$ $m^2$",
-        "$20\\sqrt{3}$ $m^2$",
-        "$50\\sqrt{3}$ $m^2$",
-        "$100\\sqrt{3}$ $m^2$"
+        "$10\\sqrt{3}$ $\\text{m}^2$",
+        "$20\\sqrt{3}$ $\\text{m}^2$",
+        "$50\\sqrt{3}$ $\\text{m}^2$",
+        "$100\\sqrt{3}$ $\\text{m}^2$"
       ],
       "correct": 3,
       "explanation": "AB=BD $\\Rightarrow$ $\\triangle$ABD echilateral\n\n$A_{ABD} = \\frac{AB^2 \\cdot \\sqrt{3}}{4}$\n$A_{ABD} = \\frac{20^2 \\cdot \\sqrt{3}}{4} = 100\\sqrt{3}$\n$A_{ABCD} = 200\\sqrt{3}$ $m^2$\n\nEH linie mijlicie în △ABD $\\Rightarrow$ EH = 10 m\nEF linie mijlicie în △ABC $\\Rightarrow$ EF = AC/2=AO \nAO înalțime în triunghi echilateral:\n$AO = \\frac{AB \\cdot \\sqrt{3}}{2} = 10\\sqrt{3}$\n\n$A_{EFGH} = EF \\cdot EH = 10 \\cdot 10\\sqrt{3} = 100\\sqrt{3}$ $m^2$\n\n$A_{\\text{gazon}} = A_{ABCD} - A_{EFGH}$ \n$ A_{\\text{gazon}}=200\\sqrt{3} - 100\\sqrt{3} = 100\\sqrt{3}$ $m^2$\n\n\n",
@@ -147,7 +147,7 @@
       "options": [
         "20 cm ",
         "15 cm ",
-        "10cm ",
+        "10 cm ",
         "5 cm"
       ],
       "correct": 0,
@@ -159,10 +159,10 @@
     {
       "text": "În figura de mai jos cubul ABCDA’B’C’D’ reprezintă o cutie confecționată din tablă care are muchia de 100 cm. Pentru confecționarea cutiei este necesară o foaie de tablă cu aria de:",
       "options": [
-        "2 $m^2$",
-        "6 $m^2$",
-        "10 $m^2$",
-        "12 $m^2$"
+        "2 $\\text{m}^2$",
+        "6 $\\text{m}^2$",
+        "10 $\\text{m}^2$",
+        "12 $\\text{m}^2$"
       ],
       "correct": 1,
       "explanation": "AB=100 cm=1 m\n$A_{totală}=6AB^2$\n$A_{totală}=6$ $m^2$\n",
