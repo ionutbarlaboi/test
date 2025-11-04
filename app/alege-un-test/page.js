@@ -103,7 +103,7 @@ export default function SelectTestPage() {
         </div>
 
         {process.env.NODE_ENV === "development" && (
-          <div style={{ marginTop: "2rem" }}>
+          <div style={{ marginTop: "2rem", display: "flex",flexDirection: "column",gap: "0.5rem" }}>
             <button
               onClick={() => router.push("/creare")}
               style={{
@@ -113,10 +113,14 @@ export default function SelectTestPage() {
                 border: "1px solid gray",
                 borderRadius: "6px",
                 cursor: "pointer",
+                width: "fit-content",
+                marginLeft: "auto",
+                marginRight: "auto",
               }}
             >
               Creare / modificare teste
             </button>
+                       
           </div>
         )}
 
