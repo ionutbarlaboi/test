@@ -29,23 +29,23 @@ export default function Test1() {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-  fetch("/testul1.json")
-    .then((res) => res.json())
-    .then((data) => {
-      const combinedQuestions = [
-        ...data.I.map((q, idx) => ({ ...q, subiect: "I", nr: idx + 1 })),
-        ...data.II.map((q, idx) => ({ ...q, subiect: "II", nr: idx + 1 })),
-      ];
-      setQuestions(combinedQuestions);
-      setAnswered(Array(combinedQuestions.length).fill(null));
-    })
-    .catch((e) => console.error("Eroare la încărcare test:", e));
-}, []);
+    fetch("/testul1.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const combinedQuestions = [
+          ...data.I.map((q, idx) => ({ ...q, subiect: "I", nr: idx + 1 })),
+          ...data.II.map((q, idx) => ({ ...q, subiect: "II", nr: idx + 1 })),
+        ];
+        setQuestions(combinedQuestions);
+        setAnswered(Array(combinedQuestions.length).fill(null));
+      })
+      .catch((e) => console.error("Eroare la încărcare test:", e));
+  }, []);
 
   if (!questions.length) return <p>Se încarcă testul...</p>;
 
   const q = questions[index];
-  const subiectText = q.subiect ? `Subiectul ${q.subiect}` : ""; // Ex: "Subiectul I"
+  const subiectText = q.subiect ? `Subiectul ${q.subiect}` : "";
 
   const handleAnswer = (i) => {
     if (selected !== null || answered[index] !== null) return;
@@ -79,6 +79,16 @@ export default function Test1() {
     }
   };
 
+  const goPrevious = () => {
+    for (let i = index - 1; i >= 0; i--) {
+      if (answered[i] === null) {
+        setIndex(i);
+        setSelected(null);
+        return;
+      }
+    }
+  };
+
   return (
     <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", textAlign: "center" }}>
       <h2
@@ -106,16 +116,16 @@ export default function Test1() {
             let bgColor = "";
             if (percentage === 100) {
               message = "💪 Perfect! Ești un campion!";
-              bgColor = "#d1e7dd"; // verde deschis
+              bgColor = "#d1e7dd";
             } else if (percentage > 80) {
               message = "🎉 Foarte bine! Mai e puțin! ";
-              bgColor = "#e0f2ff"; // albastru foarte deschis
+              bgColor = "#e0f2ff";
             } else if (percentage > 50) {
               message = "🙂 E bine! Continuă să exersezi!";
-              bgColor = "#fff3cd"; // galben
+              bgColor = "#fff3cd";
             } else {
               message = "⚠️ Nu renunța! Exersează mai mult și vei reuși!";
-              bgColor = "#f8d7da"; // roșu deschis
+              bgColor = "#f8d7da";
             }
 
             return (
@@ -145,28 +155,6 @@ export default function Test1() {
               </div>
             );
           })()}
-
-          <div
-            style={{
-              marginTop: "2rem",
-              display: "flex",
-              justifyContent: "center",
-              gap: "2rem",
-            }}
-          >
-            <p
-              style={{ textDecoration: "underline", cursor: "pointer", color: "#0070f3" }}
-              onClick={() => (window.location.href = "/alege-un-test")}
-            >
-              Alege un alt test
-            </p>
-            <p
-              style={{ textDecoration: "underline", cursor: "pointer", color: "#0070f3" }}
-              onClick={() => window.location.reload()}
-            >
-              Reia testul
-            </p>
-          </div>
 
           <div
             style={{
@@ -207,54 +195,57 @@ export default function Test1() {
           </div>
 
           <div style={{ textAlign: "left", marginTop: "2rem" }}>
-            <p style={{ fontWeight: "bold", fontSize: "18px"}}>Iată cum ai răspuns:</p>
-            
-
-              {["I", "II"].map((sub) => (
-               <div key={sub}>
-                <p style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "1rem", marginTop: "2rem" }}>
+            <p style={{ fontWeight: "bold", fontSize: "18px" }}>Iată cum ai răspuns:</p>
+            {["I", "II"].map((sub) => (
+              <div key={sub}>
+                <p
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "18px",
+                    marginBottom: "1rem",
+                    marginTop: "2rem",
+                  }}
+                >
                   Subiectul {sub}
                 </p>
                 {questions
                   .filter((q) => q.subiect === sub)
                   .map((q, i) => {
                     const realIndex = questions.findIndex(
-                     (qq) => qq.subiect === sub && qq.nr === q.nr
+                      (qq) => qq.subiect === sub && qq.nr === q.nr
                     );
                     return (
-                     <div
-                      key={realIndex}
-                      style={{
-                       marginBottom: "1rem",
-                       padding: "1rem",
-                       borderRadius: "8px",
-                       backgroundColor: answered[realIndex] ? "#d1e7dd" : "#f8d7da",
-                      }}
-                     >
-                      <p>
-                       {q.nr}. {renderWithLatex(q.text)}
-                      </p>
-                      <p style={{ marginBottom: "0.2rem", fontWeight: "normal" }}>
-                        <strong>Răspunsul tău:</strong>{" "}
-                        <span style={{ fontWeight: "normal", fontWeight: "normal" }}>
-                          {renderWithLatex(
-                            q.options[answered[realIndex] === true ? q.correct : selected]
-                          )}
-                        </span>
-                      </p>
-                      <p style={{ marginTop: 0 }}>
-                        <strong>Răspuns corect:</strong>{" "}
-                        <span style={{ fontWeight: "normal" }}>
-                          {renderWithLatex(q.options[q.correct])}
-                        </span>
-                      </p>
-                    </div>
+                      <div
+                        key={realIndex}
+                        style={{
+                          marginBottom: "1rem",
+                          padding: "1rem",
+                          borderRadius: "8px",
+                          backgroundColor: answered[realIndex] ? "#d1e7dd" : "#f8d7da",
+                        }}
+                      >
+                        <p>
+                          {q.nr}. {renderWithLatex(q.text)}
+                        </p>
+                        <p style={{ marginBottom: "0.2rem", fontWeight: "normal" }}>
+                          <strong>Răspunsul tău:</strong>{" "}
+                          <span style={{ fontWeight: "normal" }}>
+                            {renderWithLatex(
+                              q.options[answered[realIndex] === true ? q.correct : selected]
+                            )}
+                          </span>
+                        </p>
+                        <p style={{ marginTop: 0 }}>
+                          <strong>Răspuns corect:</strong>{" "}
+                          <span style={{ fontWeight: "normal" }}>
+                            {renderWithLatex(q.options[q.correct])}
+                          </span>
+                        </p>
+                      </div>
                     );
-                   })}
-                 </div>
-              ))}
-
-
+                  })}
+              </div>
+            ))}
           </div>
         </>
       ) : (
@@ -268,7 +259,6 @@ export default function Test1() {
               textAlign: "left",
             }}
           >
-            {/* Afișare subiect, centrat */}
             {subiectText && (
               <p
                 style={{
@@ -284,7 +274,6 @@ export default function Test1() {
               </p>
             )}
 
-            {/* Exercițiul X aliniat stanga */}
             <div style={{ marginBottom: "1rem" }}>
               <p
                 style={{
@@ -297,9 +286,7 @@ export default function Test1() {
               >
                 Exercițiul {q.nr}
               </p>
-              <p style={{ fontSize: "18px", textAlign: "left" }}>
-                {renderWithLatex(q.text)}
-              </p>
+              <p style={{ fontSize: "18px", textAlign: "left" }}>{renderWithLatex(q.text)}</p>
             </div>
 
             {q.image && (
@@ -360,13 +347,15 @@ export default function Test1() {
                 {selected === q.correct ? "Răspuns corect" : "Răspuns greșit"}
               </div>
               {q.explanation && (
-                <div 
-                  style={{ 
-                    whiteSpace: "pre-wrap", 
-                    fontWeight: "normal", 
+                <div
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    fontWeight: "normal",
                     overflowWrap: "break-word",
                     wordBreak: "break-word",
-                  }}>{renderWithLatex(q.explanation)}
+                  }}
+                >
+                  {renderWithLatex(q.explanation)}
                 </div>
               )}
               {q.explanationImage && (
@@ -381,16 +370,26 @@ export default function Test1() {
             </div>
           )}
 
-          <div style={{ marginTop: "2rem", textAlign: "right" }}>
-            {selected === null ? (
-              answered.filter((a) => a === null).length > 1 ? (
-                <span onClick={goNext} className="button-link">
-                  Revin mai târziu →
-                </span>
-              ) : null
-            ) : (
-              <span
-                onClick={() => {
+          {/* Blocul de butoane */}
+          <div
+            style={{
+              marginTop: "2rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {answered.slice(0, index).some((a) => a === null) && (
+              <span onClick={goPrevious} className="button-link">
+                ← Înapoi
+              </span>
+            )}
+
+            <span
+              onClick={() => {
+                if (selected === null) {
+                  goNext();
+                } else {
                   const nextIndex = index + 1;
                   if (answered.every((a) => a !== null)) {
                     setFinished(true);
@@ -400,12 +399,17 @@ export default function Test1() {
                   } else {
                     next();
                   }
-                }}
-                className="button-link"
-              >
-                {answered.every((a) => a !== null) ? "Vezi rezultatul →" : "Întrebarea următoare →"}
-              </span>
-            )}
+                }
+              }}
+              className="button-link"
+              style={{ marginLeft: "auto" }}
+            >
+              {selected === null
+                ? "Revin mai târziu →"
+                : answered.every((a) => a !== null)
+                ? "Vezi rezultatul →"
+                : "Întrebarea următoare →"}
+            </span>
           </div>
 
           <p
