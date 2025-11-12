@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import GoogleTranslate from "./GoogleTranslate"; // importăm componenta
 
 const inter = Inter({
   variable: "--font-inter",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="ro">
       <body className={`${inter.variable} antialiased`}>
         {children}
+        <GoogleTranslate /> {/* bara Google Translate */}
       </body>
     </html>
   );

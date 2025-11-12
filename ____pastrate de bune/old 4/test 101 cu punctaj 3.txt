@@ -1,0 +1,342 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import "katex/dist/katex.min.css";
+import { InlineMath } from "react-katex";
+
+function renderWithLatex(text) {
+  if (!text) return null;
+  const parts = text.split(/(\$[^$]+\$)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith("$") && part.endsWith("$")) {
+      const formula = part.slice(1, -1);
+      return (
+        <span key={index} className="latex-inline-wrapper">
+          <InlineMath math={formula} />
+        </span>
+      );
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
+export default function TestElev() {
+  const [questions, setQuestions] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [finished, setFinished] = useState(false);
+  const [totalScore, setTotalScore] = useState(0);
+
+  useEffect(() => {
+    fetch("/testul101.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const combined = data.map((q, idx) => ({ ...q, nr: idx + 1 }));
+        setQuestions(combined);
+      })
+      .catch((e) => console.error("Eroare la încărcare test:", e));
+  }, []);
+
+  if (!questions.length) return <p>Se încarcă testul...</p>;
+
+  const qCurrent = questions[index];
+
+  const handleChange = (qIndex, subIndex, value) => {
+    setAnswers({
+      ...answers,
+      [qIndex]: {
+        ...answers[qIndex],
+        [subIndex]: {
+          ...(answers[qIndex]?.[subIndex] || {}),
+          value,
+        },
+      },
+    });
+  };
+
+  // verifică subpunctul și afișează punctajul
+  const handleCheck = (qIndex, subIndex) => {
+    const ans = answers[qIndex]?.[subIndex]?.value || "";
+    let puncte = 0;
+    const sub = questions[qIndex].subitems[subIndex];
+    sub.barem.forEach((step) => {
+      if (ans.trim() === step.cheie.trim()) puncte += step.puncte;
+    });
+
+    setAnswers({
+      ...answers,
+      [qIndex]: {
+        ...answers[qIndex],
+        [subIndex]: {
+          ...answers[qIndex]?.[subIndex],
+          score: puncte,
+          checked: true,
+          blocked: true,
+        },
+      },
+    });
+  };
+
+  const handleDontKnow = (qIndex, subIndex) => {
+    setAnswers({
+      ...answers,
+      [qIndex]: {
+        ...answers[qIndex],
+        [subIndex]: {
+          ...answers[qIndex]?.[subIndex],
+          blocked: true,
+          score: 0,
+          value: "",
+          checked: true,
+        },
+      },
+    });
+  };
+
+  const allSubpointsDone = questions.every((q, qIndex) =>
+    q.subitems.every((sub, i) => {
+      const ans = answers[qIndex]?.[i];
+      return ans?.blocked || (ans?.value && ans.value.trim() !== "");
+    })
+  );
+
+  const totalSubpointsRemaining = questions.reduce((acc, q, qIndex) => {
+    return acc + q.subitems.reduce((a, sub, i) => {
+      const ans = answers[qIndex]?.[i];
+      if (!ans?.blocked && (!ans?.value || ans.value.trim() === "")) return a + 1;
+      return a;
+    }, 0);
+  }, 0);
+
+  const nextEx = () => {
+    if (allSubpointsDone) {
+      // calculăm totalScore la final
+      let total = 0;
+      questions.forEach((q, qIndex) => {
+        q.subitems.forEach((sub, sIndex) => {
+          const ans = answers[qIndex]?.[sIndex];
+          if (ans?.value) {
+            sub.barem.forEach((step) => {
+              if (ans.value.trim() === step.cheie.trim()) total += step.puncte;
+            });
+          }
+        });
+      });
+      setTotalScore(total);
+      setFinished(true);
+      return;
+    }
+
+    let nextIndex = index + 1;
+    if (nextIndex >= questions.length) nextIndex = 0;
+    for (let i = nextIndex; i < questions.length; i++) {
+      const hasRemaining = questions[i].subitems.some((sub, j) => {
+        const ans = answers[i]?.[j];
+        return !ans?.blocked && (!ans?.value || ans.value.trim() === "");
+      });
+      if (hasRemaining) {
+        setIndex(i);
+        return;
+      }
+    }
+    for (let i = 0; i < nextIndex; i++) {
+      const hasRemaining = questions[i].subitems.some((sub, j) => {
+        const ans = answers[i]?.[j];
+        return !ans?.blocked && (!ans?.value || ans.value.trim() === "");
+      });
+      if (hasRemaining) {
+        setIndex(i);
+        return;
+      }
+    }
+  };
+
+  const goBack = () => (window.location.href = "/");
+  const chooseAnother = () => (window.location.href = "/alege-un-test");
+
+  return (
+    <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto", textAlign: "center" }}>
+      <h2
+        style={{
+          fontSize: "28px",
+          fontWeight: "bold",
+          marginBottom: "1rem",
+          background: "linear-gradient(90deg, #0070f3, #00c6ff)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          borderBottom: "2px solid #0070f3",
+          display: "inline-block",
+        }}
+      >
+        Testul 101
+      </h2>
+
+      {finished ? (
+        <>
+          <div
+            style={{
+              backgroundColor: "#d1e7dd",
+              padding: "2rem",
+              borderRadius: "12px",
+              border: "2px solid #198754",
+              fontSize: "20px",
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: "1rem",
+            }}
+          >
+            Ai obținut {totalScore} puncte din{" "}
+            {questions.reduce((acc, q) => acc + q.subitems.reduce((a, s) => a + s.barem.reduce((b, st) => b + st.puncte, 0), 0), 0)} posibile
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginBottom: "2rem" }}>
+            <button onClick={goBack} style={{ padding: "6px 14px", border: "1px solid #0070f3", background: "white", color: "#0070f3", borderRadius: "6px", cursor: "pointer", fontSize: "14px", minWidth: "150px" }}>
+              Înapoi la pagina principală
+            </button>
+            <button onClick={chooseAnother} style={{ padding: "6px 14px", border: "1px solid #0070f3", background: "white", color: "#0070f3", borderRadius: "6px", cursor: "pointer", fontSize: "14px", minWidth: "150px" }}>
+              Alege un alt test
+            </button>
+          </div>
+
+          <div style={{ textAlign: "left", marginTop: "1.5rem" }}>
+            <h3>Rezumat răspunsuri:</h3>
+            {questions.map((q, idx) => (
+              <div key={idx} style={{ marginBottom: "1rem", padding: "1rem", border: "2px solid #198754", borderRadius: "8px" }}>
+                <p style={{ fontSize: "18px", fontWeight: "bold", textDecoration: "underline" }}>Exercițiul {q.nr}:</p>
+                <p style={{ fontSize: "18px" }}>{renderWithLatex(q.text)}</p>
+                {q.subitems.map((sub, i) => {
+                  const ans = answers[idx]?.[i];
+                  const totalSubPoints = sub.barem.reduce((acc, step) => acc + step.puncte, 0);
+                  return (
+                    <div key={i} style={{ marginTop: "0.5rem" }}>
+                      <p><strong>{sub.label}</strong> {renderWithLatex(sub.cerinta)}</p>
+                      <p>Răspuns: {ans?.value || "(Nu a răspuns)"}</p>
+                     
+                      {(() => {
+                        let scor = ans?.score;
+                        if (scor === undefined && ans?.value) {
+                            scor = sub.barem.reduce((acc, step) => {
+                                return acc + (ans.value.trim() === step.cheie.trim() ? step.puncte : 0);
+                            }, 0);
+                        }
+                        return (
+                          <div>Punctaj: {scor ?? 0} / {totalSubPoints}p</div>
+                         );
+                       })()}
+
+                      {sub.explanation && <div>Explicație: {renderWithLatex(sub.explanation)}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div>
+          <div style={{ textAlign: "left", border: "1px solid #ccc", borderRadius: "10px", padding: "1.5rem", marginBottom: "1rem" }}>
+            <p style={{ fontSize: "18px", fontWeight: "bold", textDecoration: "underline" }}>Exercițiul {qCurrent.nr}</p>
+            <p style={{ fontSize: "18px" }}>{renderWithLatex(qCurrent.text)}</p>
+            {qCurrent.image && (
+              <div style={{ display: "flex", justifyContent: "center", margin: "1rem 0" }}>
+                <img src={qCurrent.image} alt="Exercițiu" style={{ maxWidth: "100%", maxHeight: "300px" }} />
+              </div>
+            )}
+
+            {qCurrent.subitems.map((sub, i) => {
+              const ans = answers[index]?.[i] || {};
+              const totalSubPoints = sub.barem.reduce((acc, step) => acc + step.puncte, 0);
+              return (
+                <div key={i} style={{ marginTop: "1rem" }}>
+                  <p><strong>{sub.label}</strong> {renderWithLatex(sub.cerinta)}</p>
+                  <textarea
+                    value={ans.value || ""}
+                    onChange={(e) => handleChange(index, i, e.target.value)}
+                    rows={2}
+                    style={{ width: "100%", borderRadius: "6px", padding: "6px", marginTop: "0.3rem" }}
+                    disabled={ans.blocked}
+                  />
+                  <div style={{ marginTop: "0.3rem", display: "flex", gap: "0.5rem" }}>
+                    <button
+                      onClick={() => handleCheck(index, i)}
+                      disabled={ans.blocked}
+                      style={{
+                        padding: "6px 12px",
+                        backgroundColor: "#0070f3",
+                        color: "white",
+                        borderRadius: "6px",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Verifică
+                    </button>
+                    <button
+                      onClick={() => handleDontKnow(index, i)}
+                      disabled={ans.blocked}
+                      style={{
+                        padding: "6px 12px",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        borderRadius: "6px",
+                        border: "none",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Nu știu răspunsul
+                    </button>
+                  </div>
+                  {ans.checked && (
+                    <p>Punctaj: {ans.score} / {totalSubPoints}p</p>
+                  )}
+                  {ans.blocked && sub.explanation && (
+                    <div style={{ marginTop: "0.5rem", padding: "0.5rem", borderRadius: "6px", backgroundColor: "#d1e7dd", border: "1px solid #198754" }}>
+                      <p style={{ margin: 0 }}>{renderWithLatex(sub.explanation)}</p>
+                      {sub.explanationImage && (
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: "0.5rem" }}>
+                          <img src={sub.explanationImage} alt="Explicație" style={{ maxWidth: "100%", maxHeight: "200px" }} />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {!allSubpointsDone && (
+            <p style={{ textAlign: "center", color: "red", marginTop: "1rem" }}>
+              Mai sunt {totalSubpointsRemaining} subpuncte de completat.
+            </p>
+          )}
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1rem" }}>
+            <button
+              onClick={nextEx}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#00c6ff",
+                color: "white",
+                borderRadius: "6px",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              {allSubpointsDone ? "Vezi rezultatul →" : "Mai departe →"}
+            </button>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+            <button onClick={goBack} style={{ padding: "6px 14px", border: "1px solid #0070f3", background: "white", color: "#0070f3", borderRadius: "6px", cursor: "pointer", fontSize: "14px", minWidth: "150px" }}>
+              Înapoi la pagina principală
+            </button>
+            <button onClick={chooseAnother} style={{ padding: "6px 14px", border: "1px solid #0070f3", background: "white", color: "#0070f3", borderRadius: "6px", cursor: "pointer", fontSize: "14px", minWidth: "150px" }}>
+              Alege un alt test
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

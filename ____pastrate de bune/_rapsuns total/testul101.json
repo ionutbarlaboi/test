@@ -1,0 +1,62 @@
+[
+  {
+    "text": "Calculați valorile următoare: ",
+    "image": null,
+    "subitems": [
+      {
+        "label": "a)",
+        "cerinta": "3+2",
+        "barem": [
+          {
+            "cheie": "5",
+            "puncte": 5
+          }
+        ],
+        "explanation": "adunare",
+        "explanationImage": null
+      },
+      {
+        "label": "b)",
+        "cerinta": "2*3",
+        "barem": [
+          {
+            "cheie": "6",
+            "puncte": 5
+          }
+        ],
+        "explanation": "inmultire",
+        "explanationImage": null
+      }
+    ]
+  },
+  {
+    "text": "Rezolvați problemele de geometrie:",
+    "image": null,
+    "subitems": [
+      {
+        "label": "a)",
+        "cerinta": "cat e ungiul drept ?",
+        "barem": [
+          {
+            "cheie": "90",
+            "puncte": 5
+          }
+        ],
+        "explanation": "90",
+        "explanationImage": null
+      },
+      {
+        "label": "b)",
+        "cerinta": "Unghiul suplimentar față de 45°",
+        "barem": [
+          {
+            "cheie": "135",
+            "puncte": 5
+          }
+        ],
+        "explanation": "135",
+        "explanationImage": null
+      }
+    ]
+  }
+]
